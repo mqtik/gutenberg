@@ -4,12 +4,17 @@
 export { attr, prop, text, query } from 'hpq';
 
 /**
+ * WordPress dependencies
+ */
+import { __unstableCreateRichTextString, create } from '@wordpress/rich-text';
+
+/**
  * Internal dependencies
  */
 export { matcher as node } from './node';
 export { matcher as children } from './children';
 
-export function html( selector, multilineTag ) {
+export function html( selector, multilineTag, preserveWhiteSpace ) {
 	return ( domNode ) => {
 		let match = domNode;
 
@@ -38,6 +43,11 @@ export function html( selector, multilineTag ) {
 			return value;
 		}
 
-		return match.innerHTML;
+		return __unstableCreateRichTextString( {
+			// This is faste because we don't need to parse the HTML string.
+			value: create( { element: match } ),
+			multilineTag,
+			preserveWhiteSpace,
+		} );
 	};
 }

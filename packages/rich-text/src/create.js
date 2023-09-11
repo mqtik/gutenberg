@@ -157,6 +157,10 @@ export function create( {
 		};
 	}
 
+	if ( html instanceof String ) {
+		return html.value;
+	}
+
 	if ( typeof html === 'string' && html.length > 0 ) {
 		// It does not matter which document this is, we're just using it to
 		// parse.

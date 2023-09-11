@@ -59,7 +59,7 @@ export const toBooleanAttributeMatcher = ( matcher ) =>
 export function isOfType( value, type ) {
 	switch ( type ) {
 		case 'string':
-			return typeof value === 'string';
+			return value instanceof String || typeof value === 'string';
 
 		case 'boolean':
 			return typeof value === 'boolean';
@@ -208,7 +208,11 @@ export const matcherFromSource = memoize( ( sourceConfig ) => {
 
 			return matcher;
 		case 'html':
-			return html( sourceConfig.selector, sourceConfig.multiline );
+			return html(
+				sourceConfig.selector,
+				sourceConfig.multiline,
+				sourceConfig.preserveWhitespace
+			);
 		case 'text':
 			return text( sourceConfig.selector );
 		case 'children':

@@ -10,7 +10,6 @@ import { useRegistry } from '@wordpress/data';
  */
 import { create } from '../create';
 import { apply } from '../to-dom';
-import { toHTMLString } from '../to-html-string';
 import { useDefaultStyle } from './use-default-style';
 import { useBoundaryStyle } from './use-boundary-style';
 import { useCopyHandler } from './use-copy-handler';
@@ -19,6 +18,7 @@ import { useSelectObject } from './use-select-object';
 import { useInputAndSelection } from './use-input-and-selection';
 import { useSelectionChangeCompat } from './use-selection-change-compat';
 import { useDelete } from './use-delete';
+import { createRichTextString } from '../value';
 
 export function useRichText( {
 	value = '',
@@ -71,10 +71,13 @@ export function useRichText( {
 
 	function setRecordFromProps() {
 		_value.current = value;
-		record.current = create( {
-			html: value,
-			preserveWhiteSpace,
-		} );
+		record.current =
+			typeof value === 'string'
+				? create( {
+						html: value,
+						preserveWhiteSpace,
+				  } )
+				: value.value;
 		if ( disableFormats ) {
 			record.current.formats = Array( value.length );
 			record.current.replacements = Array( value.length );
@@ -132,7 +135,7 @@ export function useRichText( {
 		if ( disableFormats ) {
 			_value.current = newRecord.text;
 		} else {
-			_value.current = toHTMLString( {
+			_value.current = createRichTextString( {
 				value: __unstableBeforeSerialize
 					? {
 							...newRecord,
@@ -161,7 +164,7 @@ export function useRichText( {
 	function handleChangesUponInit( newRecord ) {
 		record.current = newRecord;
 
-		_value.current = toHTMLString( {
+		_value.current = createRichTextString( {
 			value: __unstableBeforeSerialize
 				? {
 						...newRecord,

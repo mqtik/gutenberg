@@ -10,7 +10,12 @@ import deprecated from '@wordpress/deprecated';
  */
 import { getMultilineTag } from './utils';
 
-export const Content = ( { value, tagName: Tag, multiline, ...props } ) => {
+export const Content = ( {
+	value = '',
+	tagName: Tag,
+	multiline,
+	...props
+} ) => {
 	// Handle deprecated `children` and `node` sources.
 	if ( Array.isArray( value ) ) {
 		deprecated( 'wp.blockEditor.RichText value prop as children type', {
@@ -29,7 +34,7 @@ export const Content = ( { value, tagName: Tag, multiline, ...props } ) => {
 		value = `<${ MultilineTag }></${ MultilineTag }>`;
 	}
 
-	const content = <RawHTML>{ value }</RawHTML>;
+	const content = <RawHTML>{ value.valueOf() }</RawHTML>;
 
 	if ( Tag ) {
 		const { format, ...restProps } = props;

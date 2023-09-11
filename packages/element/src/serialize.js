@@ -651,7 +651,7 @@ export function renderNativeComponent(
 		props = restProps;
 	} else if (
 		props.dangerouslySetInnerHTML &&
-		typeof props.dangerouslySetInnerHTML.__html === 'string'
+		props.dangerouslySetInnerHTML.__html
 	) {
 		// Dangerous content is left unescaped.
 		content = props.dangerouslySetInnerHTML.__html;

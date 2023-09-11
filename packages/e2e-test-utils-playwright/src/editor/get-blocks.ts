@@ -22,6 +22,20 @@ export async function getBlocks( this: Editor ) {
 			return [];
 		}
 
-		return blocks;
+		function normaliseBlocks( _blocks: any[] ): any[] {
+			return _blocks.map( ( block ) => {
+				return {
+					...block,
+					attributes: Object.fromEntries(
+						Object.entries( block.attributes ).map(
+							( [ k, v ] ) => [ k, v?.valueOf() ]
+						)
+					),
+					innerBlocks: normaliseBlocks( block.innerBlocks ),
+				};
+			} );
+		}
+
+		return normaliseBlocks( blocks );
 	} );
 }
