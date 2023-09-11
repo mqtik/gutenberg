@@ -40,7 +40,16 @@ export function toHTMLString( { value, preserveWhiteSpace } ) {
 		appendText,
 	} );
 
-	return createChildrenHTML( tree.children );
+	const string = new String( createChildrenHTML( tree.children ) );
+
+	Object.defineProperty( string, 'value', {
+		value,
+	} );
+	Object.defineProperty( string, 'preserveWhiteSpace', {
+		value: preserveWhiteSpace,
+	} );
+
+	return string;
 }
 
 function createEmpty() {

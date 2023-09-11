@@ -194,7 +194,7 @@ export function usePasteHandler( props ) {
 				disableFilters: !! clipboardData.getData( 'rich-text' ),
 			} );
 
-			if ( typeof content === 'string' ) {
+			if ( typeof content === 'string' || content instanceof String ) {
 				const valueToInsert = create( { html: content } );
 				addActiveFormats( valueToInsert, value.activeFormats );
 				onChange( insert( value, valueToInsert ) );

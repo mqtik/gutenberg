@@ -6,7 +6,7 @@ export { attr, prop, text, query } from 'hpq';
 /**
  * WordPress dependencies
  */
-import { __unstableCreateRichTextString, create } from '@wordpress/rich-text';
+import { toHTMLString, create } from '@wordpress/rich-text';
 
 /**
  * Internal dependencies
@@ -43,8 +43,9 @@ export function html( selector, multilineTag, preserveWhiteSpace ) {
 			return value;
 		}
 
-		return __unstableCreateRichTextString( {
-			// This is faste because we don't need to parse the HTML string.
+		// Note that this stores a reference to the created rich text value.
+		return toHTMLString( {
+			// This is fast because we don't need to parse the HTML string.
 			value: create( { element: match } ),
 			multilineTag,
 			preserveWhiteSpace,

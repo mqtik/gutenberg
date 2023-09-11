@@ -149,16 +149,16 @@ export function create( {
 	__unstableIsEditableTree: isEditableTree,
 	preserveWhiteSpace,
 } = {} ) {
+	if ( html instanceof String ) {
+		return html.value;
+	}
+
 	if ( typeof text === 'string' && text.length > 0 ) {
 		return {
 			formats: Array( text.length ),
 			replacements: Array( text.length ),
 			text,
 		};
-	}
-
-	if ( html instanceof String ) {
-		return html.value;
 	}
 
 	if ( typeof html === 'string' && html.length > 0 ) {
