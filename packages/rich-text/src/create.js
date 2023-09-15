@@ -16,6 +16,7 @@ import { OBJECT_REPLACEMENT_CHARACTER, ZWNBSP } from './special-characters';
 function createEmptyValue() {
 	return {
 		formats: [],
+		_formats: new Map(),
 		replacements: [],
 		text: '',
 	};
@@ -152,6 +153,7 @@ export function create( {
 	if ( typeof text === 'string' && text.length > 0 ) {
 		return {
 			formats: Array( text.length ),
+			_formats: new Map(),
 			replacements: Array( text.length ),
 			text,
 		};
@@ -365,6 +367,7 @@ function createFromElement( {
 		if ( tagName === 'script' ) {
 			const value = {
 				formats: [ , ],
+				_formats: new Map(),
 				replacements: [
 					{
 						type: tagName,
@@ -400,6 +403,7 @@ function createFromElement( {
 			accumulateSelection( accumulator, node, range, createEmptyValue() );
 			mergePair( accumulator, {
 				formats: [ , ],
+				_formats: new Map(),
 				replacements: [
 					{
 						...format,
@@ -428,6 +432,7 @@ function createFromElement( {
 			if ( format.attributes ) {
 				mergePair( accumulator, {
 					formats: [ , ],
+					_formats: new Map(),
 					replacements: [ format ],
 					text: OBJECT_REPLACEMENT_CHARACTER,
 				} );
@@ -456,6 +461,10 @@ function createFromElement( {
 
 			mergePair( accumulator, {
 				...value,
+				_formats: new Map( [
+					[ format, [ 0, value.text.length ] ],
+					...value._formats,
+				] ),
 				formats: Array.from( value.formats, mergeFormats ),
 			} );
 		}

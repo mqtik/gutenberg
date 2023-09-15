@@ -68,6 +68,7 @@ export const spec = [
 			start: 0,
 			end: 2,
 			formats: [ [ em ], [ em ] ],
+			_formats: new Map().set( em, [ 0, 2 ] ),
 			replacements: [ , , ],
 			text: 'hi',
 		},
@@ -182,6 +183,7 @@ export const spec = [
 			start: 0,
 			end: 2,
 			formats: [ [ em ], [ em ] ],
+			_formats: new Map().set( em, [ 0, 2 ] ),
 			replacements: [ , , ],
 			text: '🍒',
 		},
@@ -201,6 +203,7 @@ export const spec = [
 			start: 0,
 			end: 4,
 			formats: [ [ em ], [ em ], [ em ], [ em ] ],
+			_formats: new Map().set( em, [ 0, 4 ] ),
 			replacements: [ , , , , ],
 			text: 'test',
 		},
@@ -225,6 +228,7 @@ export const spec = [
 				[ em, strong ],
 				[ em, strong ],
 			],
+			_formats: new Map().set( em, [ 0, 4 ] ).set( strong, [ 0, 4 ] ),
 			replacements: [ , , , , ],
 			text: 'test',
 		},
@@ -244,6 +248,7 @@ export const spec = [
 			start: 0,
 			end: 2,
 			formats: [ [ em ], [ em ], [ em ], [ em ] ],
+			_formats: new Map().set( em, [ 0, 2 ] ).set( { ...em }, [ 2, 4 ] ),
 			replacements: [ , , , , ],
 			text: 'test',
 		},
@@ -263,6 +268,7 @@ export const spec = [
 			start: 0,
 			end: 4,
 			formats: [ [ a ], [ a ], [ a ], [ a ] ],
+			_formats: new Map().set( a, [ 0, 4 ] ),
 			replacements: [ , , , , ],
 			text: 'test',
 		},
@@ -301,6 +307,7 @@ export const spec = [
 			start: 0,
 			end: 1,
 			formats: [ [ em ] ],
+			_formats: new Map().set( em, [ 0, 1 ] ),
 			replacements: [ img ],
 			text: '\ufffc',
 		},
@@ -320,6 +327,7 @@ export const spec = [
 			start: 0,
 			end: 5,
 			formats: [ , , [ em ], [ em ], [ em ] ],
+			_formats: new Map().set( em, [ 2, 5 ] ),
 			replacements: [ , , , , img ],
 			text: 'test\ufffc',
 		},
@@ -339,6 +347,7 @@ export const spec = [
 			start: 0,
 			end: 5,
 			formats: [ [ em ], [ em ], [ em ], , , ],
+			_formats: new Map().set( em, [ 0, 3 ] ),
 			replacements: [ img, , , , , ],
 			text: '\ufffctest',
 		},
@@ -396,6 +405,7 @@ export const spec = [
 			start: 0,
 			end: 1,
 			formats: [ [ em ] ],
+			_formats: new Map().set( em, [ 0, 1 ] ),
 			replacements: [ , ],
 			text: '\n',
 		},
@@ -472,6 +482,7 @@ export const spec = [
 			start: 0,
 			end: 4,
 			formats: [ [ strong ], [ strong ], [ strong ], [ strong ] ],
+			_formats: new Map().set( strong, [ 0, 4 ] ),
 			replacements: [ , , , , ],
 			text: 'test',
 		},
@@ -494,6 +505,10 @@ export const spec = [
 				[ a, em ],
 				[ a, strong ],
 			],
+			_formats: new Map()
+				.set( a, [ 0, 2 ] )
+				.set( em, [ 0, 1 ] )
+				.set( strong, [ 1, 2 ] ),
 			replacements: [ , , ],
 			text: '12',
 		},
@@ -516,6 +531,11 @@ export const spec = [
 				[ em, a ],
 				[ strong, a ],
 			],
+			_formats: new Map()
+				.set( em, [ 0, 1 ] )
+				.set( a, [ 0, 1 ] )
+				.set( strong, [ 1, 2 ] )
+				.set( { ...a }, [ 1, 2 ] ),
 			replacements: [ , , ],
 			text: '12',
 		},
@@ -594,6 +614,15 @@ export const specWithRegistration = [
 					},
 				],
 			],
+			_formats: new Map().set(
+				{
+					type: 'my-plugin/link',
+					tagName: 'a',
+					attributes: {},
+					unregisteredAttributes: {},
+				},
+				[ 0, 1 ]
+			),
 			replacements: [ , ],
 			text: 'a',
 		},
@@ -621,6 +650,17 @@ export const specWithRegistration = [
 					},
 				],
 			],
+			_formats: new Map().set(
+				{
+					type: 'my-plugin/link',
+					tagName: 'a',
+					attributes: {},
+					unregisteredAttributes: {
+						class: 'test',
+					},
+				},
+				[ 0, 1 ]
+			),
 			replacements: [ , ],
 			text: 'a',
 		},
@@ -648,6 +688,17 @@ export const specWithRegistration = [
 					},
 				],
 			],
+			_formats: new Map().set(
+				{
+					type: 'core/link',
+					tagName: 'a',
+					attributes: {},
+					unregisteredAttributes: {
+						class: 'custom-format',
+					},
+				},
+				[ 0, 1 ]
+			),
 			replacements: [ , ],
 			text: 'a',
 		},
@@ -666,6 +717,15 @@ export const specWithRegistration = [
 					},
 				],
 			],
+			_formats: new Map().set(
+				{
+					type: 'a',
+					attributes: {
+						class: 'custom-format',
+					},
+				},
+				[ 0, 1 ]
+			),
 			replacements: [ , ],
 			text: 'a',
 		},
@@ -712,6 +772,15 @@ export const specWithRegistration = [
 					},
 				],
 			],
+			_formats: new Map().set(
+				{
+					type: 'my-plugin/link',
+					tagName: 'a',
+					attributes: {},
+					unregisteredAttributes: {},
+				},
+				[ 0, 1 ]
+			),
 			replacements: [ , ],
 			text: 'a',
 		},
