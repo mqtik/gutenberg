@@ -6,7 +6,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { createHigherOrderComponent, useInstanceId } from '@wordpress/compose';
+import { createHigherOrderComponent } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
 import { getBlockSupport, hasBlockSupport } from '@wordpress/blocks';
 import { useSelect } from '@wordpress/data';
@@ -17,6 +17,7 @@ import {
 	PanelBody,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { useId } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -360,7 +361,7 @@ export const withLayoutStyles = createHigherOrderComponent(
 		} );
 		const shouldRenderLayoutStyles =
 			blockSupportsLayout && ! disableLayoutStyles;
-		const id = useInstanceId( BlockListBlock );
+		const id = useId();
 		const { layout } = attributes;
 		const { default: defaultBlockLayout } =
 			getBlockSupport( name, layoutBlockSupportKey ) || {};
@@ -432,7 +433,7 @@ export const withChildLayoutStyles = createHigherOrderComponent(
 		const shouldRenderChildLayoutStyles =
 			hasChildLayout && ! disableLayoutStyles;
 
-		const id = useInstanceId( BlockListBlock );
+		const id = useId();
 		const selector = `.wp-container-content-${ id }`;
 
 		let css = '';
