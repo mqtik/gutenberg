@@ -6,7 +6,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { createHigherOrderComponent } from '@wordpress/compose';
+import { createHigherOrderComponent, useInstanceId } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
 import { getBlockSupport, hasBlockSupport } from '@wordpress/blocks';
 import { useSelect } from '@wordpress/data';
@@ -17,7 +17,6 @@ import {
 	PanelBody,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useId } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -361,7 +360,7 @@ export const withLayoutStyles = createHigherOrderComponent(
 		} );
 		const shouldRenderLayoutStyles =
 			blockSupportsLayout && ! disableLayoutStyles;
-		const id = useId();
+		const id = useInstanceId( BlockListBlock );
 		const { layout } = attributes;
 		const { default: defaultBlockLayout } =
 			getBlockSupport( name, layoutBlockSupportKey ) || {};
@@ -433,7 +432,7 @@ export const withChildLayoutStyles = createHigherOrderComponent(
 		const shouldRenderChildLayoutStyles =
 			hasChildLayout && ! disableLayoutStyles;
 
-		const id = useId();
+		const id = useInstanceId( BlockListBlock );
 		const selector = `.wp-container-content-${ id }`;
 
 		let css = '';
@@ -455,7 +454,7 @@ export const withChildLayoutStyles = createHigherOrderComponent(
 				shouldRenderChildLayoutStyles && !! css, // Only attach a container class if there is generated CSS to be attached.
 		} );
 
-		useStyleOverride( { id, css } );
+		useStyleOverride( { css } );
 
 		return <BlockListBlock { ...props } className={ className } />;
 	},
