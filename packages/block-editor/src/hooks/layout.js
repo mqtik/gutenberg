@@ -400,7 +400,7 @@ export const withLayoutStyles = createHigherOrderComponent(
 			layoutClasses
 		);
 
-		useStyleOverride( { id, css } );
+		useStyleOverride( { css } );
 
 		return (
 			<BlockListBlock
