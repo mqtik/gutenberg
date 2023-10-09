@@ -2,7 +2,8 @@
  * WordPress dependencies
  */
 import { useSelect, useDispatch } from '@wordpress/data';
-import { store as editorStore, StarterPatternsModal } from '@wordpress/editor';
+import { store as editorStore } from '@wordpress/editor';
+import { StarterPatternsModal } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies

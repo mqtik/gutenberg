@@ -77,7 +77,6 @@ export {
 	usePostVisibilityLabel,
 } from './post-visibility/label';
 export { default as PostVisibilityCheck } from './post-visibility/check';
-export { default as StarterPatternsModal } from './starter-patterns-modal';
 export { default as TableOfContents } from './table-of-contents';
 export { default as ThemeSupportCheck } from './theme-support-check';
 export { default as UnsavedChangesWarning } from './unsaved-changes-warning';

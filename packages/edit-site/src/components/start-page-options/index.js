@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 import { useSelect } from '@wordpress/data';
-import { StarterPatternsModal } from '@wordpress/editor';
+import { StarterPatternsModal } from '@wordpress/block-editor';
 import { store as preferencesStore } from '@wordpress/preferences';
 
 /**
