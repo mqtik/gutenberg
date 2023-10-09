@@ -25,9 +25,15 @@ export default function StartPageOptions() {
 	const { shouldOpenModal, postType } = useSelect( ( select ) => {
 		const { getEditedPostContext, hasPageContentFocus } =
 			select( editSiteStore );
-		const _hasPageContentFocus = hasPageContentFocus();
 		const context = getEditedPostContext();
+
+		// This data isn't always available immediately.
+		if ( ! context?.postType || ! context?.postId ) {
+			return { shouldOpenModal: false };
+		}
+
 		const { hasEditsForEntityRecord } = select( coreStore );
+		const _hasPageContentFocus = hasPageContentFocus();
 
 		return {
 			shouldOpenModal:
