@@ -4,23 +4,26 @@
 import { Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useState, useMemo } from '@wordpress/element';
-import {
-	store as blockEditorStore,
-	__experimentalBlockPatternsList as BlockPatternsList,
-} from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import { useAsyncList } from '@wordpress/compose';
 
-function useStarterPatterns( postType ) {
+/**
+ * Internal dependencies
+ */
+import { store as blockEditorStore } from '../../store';
+import { __experimentalBlockPatternsList as BlockPatternsList } from '../';
+
+function useStarterPatterns( postType, rootClientId ) {
 	// A pattern is a start pattern if it includes 'core/post-content' in its blockTypes,
 	// and it has no postTypes declared and the current post type is page or if
 	// the current post type is part of the postTypes declared.
 	const blockPatternsWithPostContentBlockType = useSelect(
 		( select ) =>
 			select( blockEditorStore ).getPatternsByBlockTypes(
-				'core/post-content'
+				'core/post-content',
+				rootClientId
 			),
-		[]
+		[ rootClientId ]
 	);
 
 	return useMemo( () => {
@@ -36,9 +39,13 @@ function useStarterPatterns( postType ) {
 	}, [ postType, blockPatternsWithPostContentBlockType ] );
 }
 
-export default function StarterPatternsModal( { onChoosePattern, postType } ) {
+export default function StarterPatternsModal( {
+	onChoosePattern,
+	postType,
+	rootClientId,
+} ) {
 	const [ isClosed, setIsClosed ] = useState( false );
-	const starterPatterns = useStarterPatterns( postType );
+	const starterPatterns = useStarterPatterns( postType, rootClientId );
 	const shownStarterPatterns = useAsyncList( starterPatterns );
 
 	if ( starterPatterns.length === 0 || isClosed ) {

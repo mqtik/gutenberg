@@ -1,59 +1,73 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
-import { StarterPatternsModal } from '@wordpress/block-editor';
+import { useDispatch, useSelect } from '@wordpress/data';
+import {
+	store as blockEditorStore,
+	StarterPatternsModal,
+} from '@wordpress/block-editor';
 import { store as preferencesStore } from '@wordpress/preferences';
 
 /**
  * Internal dependencies
  */
 import { store as editSiteStore } from '../../store';
-import { store as coreStore, useEntityBlockEditor } from '@wordpress/core-data';
-
-function StartPageOptionsModal( { postType } ) {
-	const [ , , onChange ] = useEntityBlockEditor( 'postType', postType );
-	return (
-		<StarterPatternsModal
-			postType={ postType }
-			onChoosePattern={ ( pattern, blocks ) => onChange( blocks ) }
-		/>
-	);
-}
 
 export default function StartPageOptions() {
-	const { shouldOpenModal, postType } = useSelect( ( select ) => {
-		const { getEditedPostContext, hasPageContentFocus } =
-			select( editSiteStore );
-		const context = getEditedPostContext();
+	const { replaceInnerBlocks } = useDispatch( blockEditorStore );
+	const { shouldOpenModal, postType, rootClientId } = useSelect(
+		( select ) => {
+			// Check that a page is being edited in content focus mode, and the welcome guide isn't also open.
+			const { hasPageContentFocus, getEditedPostContext } =
+				select( editSiteStore );
+			const context = getEditedPostContext();
+			const isEditingPage =
+				context?.postType === 'page' &&
+				context?.postId &&
+				hasPageContentFocus();
+			const isWelcomeGuideOpen = select( preferencesStore ).get(
+				'core/edit-site',
+				'welcomeGuide'
+			);
+			if ( ! isEditingPage || isWelcomeGuideOpen ) {
+				return { shouldOpenModal: false };
+			}
 
-		// This data isn't always available immediately.
-		if ( ! context?.postType || ! context?.postId ) {
-			return { shouldOpenModal: false };
-		}
+			// Check if there's a page content block. Return early if there isn't.
+			const { __experimentalGetGlobalBlocksByName, getBlock } =
+				select( blockEditorStore );
+			const [ contentBlockClientId ] =
+				__experimentalGetGlobalBlocksByName( 'core/post-content' );
+			if ( ! contentBlockClientId ) {
+				return { shouldOpenModal: false };
+			}
 
-		const { hasEditsForEntityRecord } = select( coreStore );
-		const _hasPageContentFocus = hasPageContentFocus();
+			// Check if there's inner blocks in the content block.
+			const contentBlock = getBlock( contentBlockClientId );
+			if ( contentBlock?.innerBlocks?.length ) {
+				return { shouldOpenModal: false };
+			}
 
-		return {
-			shouldOpenModal:
-				_hasPageContentFocus &&
-				! hasEditsForEntityRecord(
-					'postType',
-					context.postType,
-					context.postId
-				) &&
-				! select( preferencesStore ).get(
-					'core/edit-site',
-					'welcomeGuide'
-				),
-			postType: context.postType,
-		};
-	}, [] );
+			return {
+				shouldOpenModal: true,
+				postType: context.postType,
+				rootClientId: contentBlockClientId,
+			};
+		},
+		[]
+	);
 
 	if ( ! shouldOpenModal ) {
 		return null;
 	}
 
-	return <StartPageOptionsModal postType={ postType } />;
+	return (
+		<StarterPatternsModal
+			postType={ postType }
+			rootClientId={ rootClientId }
+			onChoosePattern={ ( pattern, blocks ) =>
+				replaceInnerBlocks( rootClientId, blocks )
+			}
+		/>
+	);
 }
