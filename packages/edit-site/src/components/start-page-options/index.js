@@ -19,7 +19,6 @@ export default function StartPageOptions() {
 	const [ isClosed, setIsClosed ] = useState( false );
 	const { shouldOpenModal, postType, rootClientId } = useSelect(
 		( select ) => {
-			// Check that a page is being edited in content focus mode, and the welcome guide isn't also open.
 			const { hasPageContentFocus, getEditedPostContext } =
 				select( editSiteStore );
 			const context = getEditedPostContext();
@@ -35,7 +34,6 @@ export default function StartPageOptions() {
 				return { shouldOpenModal: false };
 			}
 
-			// Check if there's a page content block. Return early if there isn't.
 			const { __experimentalGetGlobalBlocksByName, getBlock } =
 				select( blockEditorStore );
 			const [ contentBlockClientId ] =
@@ -44,7 +42,6 @@ export default function StartPageOptions() {
 				return { shouldOpenModal: false };
 			}
 
-			// Check if there's inner blocks in the content block.
 			const contentBlock = getBlock( contentBlockClientId );
 			if ( contentBlock?.innerBlocks?.length ) {
 				return { shouldOpenModal: false };
