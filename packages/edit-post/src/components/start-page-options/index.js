@@ -14,22 +14,20 @@ import { store as editPostStore } from '../../store';
 export default function StartPageOptions() {
 	const [ isClosed, setIsClosed ] = useState( false );
 	const { resetEditorBlocks } = useDispatch( editorStore );
-	const postType = useSelect(
-		( select ) => select( editorStore ).getCurrentPostType(),
-		[]
-	);
-	const shouldEnableModal = useSelect( ( select ) => {
-		const { isCleanNewPost } = select( editorStore );
+	const { shouldOpenModal, postType } = useSelect( ( select ) => {
+		const { isCleanNewPost, getCurrentPostType } = select( editorStore );
 		const { isEditingTemplate, isFeatureActive } = select( editPostStore );
 
-		return (
-			! isEditingTemplate() &&
-			! isFeatureActive( 'welcomeGuide' ) &&
-			isCleanNewPost()
-		);
+		return {
+			shouldOpenModal:
+				! isEditingTemplate() &&
+				! isFeatureActive( 'welcomeGuide' ) &&
+				isCleanNewPost(),
+			postType: getCurrentPostType(),
+		};
 	}, [] );
 
-	if ( isClosed || ! shouldEnableModal ) {
+	if ( isClosed || ! shouldOpenModal ) {
 		return null;
 	}
 
