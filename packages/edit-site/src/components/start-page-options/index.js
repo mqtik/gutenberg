@@ -1,11 +1,12 @@
 /**
  * WordPress dependencies
  */
-import { useDispatch, useSelect } from '@wordpress/data';
 import {
 	store as blockEditorStore,
 	StarterPatternsModal,
 } from '@wordpress/block-editor';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { useState } from '@wordpress/element';
 import { store as preferencesStore } from '@wordpress/preferences';
 
 /**
@@ -15,6 +16,7 @@ import { store as editSiteStore } from '../../store';
 
 export default function StartPageOptions() {
 	const { replaceInnerBlocks } = useDispatch( blockEditorStore );
+	const [ isClosed, setIsClosed ] = useState( false );
 	const { shouldOpenModal, postType, rootClientId } = useSelect(
 		( select ) => {
 			// Check that a page is being edited in content focus mode, and the welcome guide isn't also open.
@@ -57,7 +59,7 @@ export default function StartPageOptions() {
 		[]
 	);
 
-	if ( ! shouldOpenModal ) {
+	if ( isClosed || ! shouldOpenModal ) {
 		return null;
 	}
 
@@ -65,9 +67,11 @@ export default function StartPageOptions() {
 		<StarterPatternsModal
 			postType={ postType }
 			rootClientId={ rootClientId }
-			onChoosePattern={ ( pattern, blocks ) =>
-				replaceInnerBlocks( rootClientId, blocks )
-			}
+			onChoosePattern={ ( pattern, blocks ) => {
+				replaceInnerBlocks( rootClientId, blocks );
+				setIsClosed( true );
+			} }
+			onRequestClose={ () => setIsClosed( true ) }
 		/>
 	);
 }

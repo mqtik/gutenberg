@@ -3,7 +3,7 @@
  */
 import { Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useState, useMemo } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { useAsyncList } from '@wordpress/compose';
 
@@ -41,14 +41,14 @@ function useStarterPatterns( postType, rootClientId ) {
 
 export default function StarterPatternsModal( {
 	onChoosePattern,
+	onRequestClose,
 	postType,
 	rootClientId,
 } ) {
-	const [ isClosed, setIsClosed ] = useState( false );
 	const starterPatterns = useStarterPatterns( postType, rootClientId );
 	const shownStarterPatterns = useAsyncList( starterPatterns );
 
-	if ( starterPatterns.length === 0 || isClosed ) {
+	if ( starterPatterns.length === 0 ) {
 		return null;
 	}
 
@@ -57,16 +57,13 @@ export default function StarterPatternsModal( {
 			className="editor-starter-patterns__modal"
 			title={ __( 'Choose a pattern' ) }
 			isFullScreen
-			onRequestClose={ () => setIsClosed( true ) }
+			onRequestClose={ onRequestClose }
 		>
 			<div className="editor-starter-patterns__modal-content">
 				<BlockPatternsList
 					blockPatterns={ starterPatterns }
 					shownPatterns={ shownStarterPatterns }
-					onClickPattern={ ( pattern, blocks ) => {
-						onChoosePattern( pattern, blocks );
-						setIsClosed( true );
-					} }
+					onClickPattern={ onChoosePattern }
 				/>
 			</div>
 		</Modal>

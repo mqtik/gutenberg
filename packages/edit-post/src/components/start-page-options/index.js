@@ -3,6 +3,7 @@
  */
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
+import { useState } from '@wordpress/element';
 import { StarterPatternsModal } from '@wordpress/block-editor';
 
 /**
@@ -10,24 +11,13 @@ import { StarterPatternsModal } from '@wordpress/block-editor';
  */
 import { store as editPostStore } from '../../store';
 
-function StartPageOptionsModal() {
+export default function StartPageOptions() {
+	const [ isClosed, setIsClosed ] = useState( false );
 	const { resetEditorBlocks } = useDispatch( editorStore );
 	const postType = useSelect(
 		( select ) => select( editorStore ).getCurrentPostType(),
 		[]
 	);
-
-	return (
-		<StarterPatternsModal
-			postType={ postType }
-			onChoosePattern={ ( pattern, blocks ) =>
-				resetEditorBlocks( blocks )
-			}
-		/>
-	);
-}
-
-export default function StartPageOptions() {
 	const shouldEnableModal = useSelect( ( select ) => {
 		const { isCleanNewPost } = select( editorStore );
 		const { isEditingTemplate, isFeatureActive } = select( editPostStore );
@@ -39,9 +29,18 @@ export default function StartPageOptions() {
 		);
 	}, [] );
 
-	if ( ! shouldEnableModal ) {
+	if ( isClosed || ! shouldEnableModal ) {
 		return null;
 	}
 
-	return <StartPageOptionsModal />;
+	return (
+		<StarterPatternsModal
+			postType={ postType }
+			onChoosePattern={ ( pattern, blocks ) => {
+				resetEditorBlocks( blocks );
+				setIsClosed( true );
+			} }
+			onRequestClose={ () => setIsClosed( true ) }
+		/>
+	);
 }
