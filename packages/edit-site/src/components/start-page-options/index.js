@@ -65,8 +65,13 @@ export default function StartPageOptions() {
 			postType={ postType }
 			rootClientId={ rootClientId }
 			onChoosePattern={ ( pattern, blocks ) => {
-				replaceInnerBlocks( rootClientId, blocks );
 				setIsClosed( true );
+				const selectInsertedBlocks = true;
+				replaceInnerBlocks(
+					rootClientId,
+					blocks,
+					selectInsertedBlocks
+				);
 			} }
 			onRequestClose={ () => setIsClosed( true ) }
 		/>
