@@ -54,12 +54,11 @@ export default function StarterPatternsModal( {
 
 	return (
 		<Modal
-			className="editor-starter-patterns__modal"
 			title={ __( 'Choose a pattern' ) }
 			isFullScreen
 			onRequestClose={ onRequestClose }
 		>
-			<div className="editor-starter-patterns__modal-content">
+			<div className="block-editor-starter-patterns-modal__content">
 				<BlockPatternsList
 					blockPatterns={ starterPatterns }
 					shownPatterns={ shownStarterPatterns }
