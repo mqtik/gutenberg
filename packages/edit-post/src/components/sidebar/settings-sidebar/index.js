@@ -28,6 +28,10 @@ import PluginDocumentSettingPanel from '../plugin-document-setting-panel';
 import PluginSidebarEditPost from '../plugin-sidebar';
 import TemplateSummary from '../template-summary';
 import { store as editPostStore } from '../../../store';
+import { privateApis as componentsPrivateApis } from '@wordpress/components';
+import { unlock } from '../../../lock-unlock';
+
+const { Tabs } = unlock( componentsPrivateApis );
 
 const SIDEBAR_ACTIVE_BY_DEFAULT = Platform.select( {
 	web: true,
@@ -70,35 +74,39 @@ const SettingsSidebar = () => {
 	);
 
 	return (
-		<PluginSidebarEditPost
-			identifier={ sidebarName }
-			header={ <SettingsHeader sidebarName={ sidebarName } /> }
-			closeLabel={ __( 'Close Settings' ) }
-			headerClassName="edit-post-sidebar__panel-tabs"
-			/* translators: button label text should, if possible, be under 16 characters. */
-			title={ __( 'Settings' ) }
-			toggleShortcut={ keyboardShortcut }
-			icon={ isRTL() ? drawerLeft : drawerRight }
-			isActiveByDefault={ SIDEBAR_ACTIVE_BY_DEFAULT }
-		>
-			{ ! isTemplateMode && sidebarName === 'edit-post/document' && (
-				<>
-					<PostStatus />
-					<PluginDocumentSettingPanel.Slot />
-					<LastRevision />
-					<PostTaxonomies />
-					<FeaturedImage />
-					<PostExcerpt />
-					<DiscussionPanel />
-					<PageAttributes />
-					<MetaBoxes location="side" />
-				</>
-			) }
-			{ isTemplateMode && sidebarName === 'edit-post/document' && (
-				<TemplateSummary />
-			) }
-			{ sidebarName === 'edit-post/block' && <BlockInspector /> }
-		</PluginSidebarEditPost>
+		<Tabs selectedId={ sidebarName }>
+			<PluginSidebarEditPost
+				identifier={ sidebarName }
+				header={ <SettingsHeader sidebarName={ sidebarName } /> }
+				closeLabel={ __( 'Close Settings' ) }
+				headerClassName="edit-post-sidebar__panel-tabs"
+				/* translators: button label text should, if possible, be under 16 characters. */
+				title={ __( 'Settings' ) }
+				toggleShortcut={ keyboardShortcut }
+				icon={ isRTL() ? drawerLeft : drawerRight }
+				isActiveByDefault={ SIDEBAR_ACTIVE_BY_DEFAULT }
+			>
+				{ /* Tabs.TabPanel id="edit-post/document" */ }
+				{ /* Tabs.TabPanel id="edit-post/block" */ }
+				{ ! isTemplateMode && sidebarName === 'edit-post/document' && (
+					<>
+						<PostStatus />
+						<PluginDocumentSettingPanel.Slot />
+						<LastRevision />
+						<PostTaxonomies />
+						<FeaturedImage />
+						<PostExcerpt />
+						<DiscussionPanel />
+						<PageAttributes />
+						<MetaBoxes location="side" />
+					</>
+				) }
+				{ isTemplateMode && sidebarName === 'edit-post/document' && (
+					<TemplateSummary />
+				) }
+				{ sidebarName === 'edit-post/block' && <BlockInspector /> }
+			</PluginSidebarEditPost>
+		</Tabs>
 	);
 };
 

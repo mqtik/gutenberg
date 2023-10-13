@@ -1,7 +1,10 @@
 /**
  * WordPress dependencies
  */
-import { Button } from '@wordpress/components';
+import {
+	Button,
+	privateApis as componentsPrivateApis,
+} from '@wordpress/components';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
@@ -10,6 +13,9 @@ import { store as editorStore } from '@wordpress/editor';
  * Internal dependencies
  */
 import { store as editPostStore } from '../../../store';
+import { unlock } from '../../../lock-unlock';
+
+const { Tabs } = unlock( componentsPrivateApis );
 
 const SettingsHeader = ( { sidebarName } ) => {
 	const { openGeneralSidebar } = useDispatch( editPostStore );
@@ -45,48 +51,51 @@ const SettingsHeader = ( { sidebarName } ) => {
 			? [ __( 'Template (selected)' ), 'is-active' ]
 			: [ __( 'Template' ), '' ];
 
-	/* Use a list so screen readers will announce how many tabs there are. */
 	return (
-		<ul>
-			{ ! isTemplateMode && (
-				<li>
-					<Button
-						onClick={ openDocumentSettings }
-						className={ `edit-post-sidebar__panel-tab ${ documentActiveClass }` }
-						aria-label={ documentAriaLabel }
-						data-label={ documentLabel }
-					>
-						{ documentLabel }
-					</Button>
-				</li>
-			) }
-			{ isTemplateMode && (
-				<li>
-					<Button
-						onClick={ openDocumentSettings }
-						className={ `edit-post-sidebar__panel-tab ${ templateActiveClass }` }
-						aria-label={ templateAriaLabel }
-						data-label={ __( 'Template' ) }
-					>
-						{ __( 'Template' ) }
-					</Button>
-				</li>
-			) }
-			<li>
-				<Button
-					onClick={ openBlockSettings }
-					className={ `edit-post-sidebar__panel-tab ${ blockActiveClass }` }
-					aria-label={ blockAriaLabel }
-					// translators: Data label for the Block Settings Sidebar tab.
-					data-label={ __( 'Block' ) }
-				>
-					{
-						// translators: Text label for the Block Settings Sidebar tab.
-						__( 'Block' )
+		<>
+			{ /* // Also: we may have to retain the onclick handler to call the dispatch function*/ }
+			<Tabs.TabList>
+				<Tabs.Tab
+					id="edit-post/document"
+					render={
+						isTemplateMode ? (
+							<Button
+								onClick={ openDocumentSettings }
+								className={ `edit-post-sidebar__panel-tab ${ templateActiveClass }` }
+								aria-label={ templateAriaLabel }
+								data-label={ __( 'Template' ) }
+							/>
+						) : (
+							<Button
+								onClick={ openDocumentSettings }
+								className={ `edit-post-sidebar__panel-tab ${ documentActiveClass }` }
+								aria-label={ documentAriaLabel }
+								data-label={ documentLabel }
+							/>
+						)
 					}
-				</Button>
-			</li>
-		</ul>
+				>
+					{ isTemplateMode ? __( 'Template' ) : documentLabel }
+				</Tabs.Tab>
+				<Tabs.Tab
+					id="edit-post/block"
+					render={
+						<Button
+							onClick={ openBlockSettings }
+							className={ `edit-post-sidebar__panel-tab ${ blockActiveClass }` }
+							aria-label={ blockAriaLabel }
+							// translators: Data label for the Block Settings Sidebar tab.
+							data-label={ __( 'Block' ) }
+						>
+							{  }
+						</Button>
+					}
+				>
+					{ /* translators: Text label for the Block Settings Sidebar tab. */ }
+					{ __( 'Block' ) }
+				</Tabs.Tab>
+			</Tabs.TabList>
+		</>
 	);
 };
 

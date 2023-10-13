@@ -8,18 +8,18 @@ import * as Ariakit from '@ariakit/react';
  * WordPress dependencies
  */
 import warning from '@wordpress/warning';
-import { forwardRef } from '@wordpress/element';
+import { forwardRef, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import type { TabListProps } from './types';
-import { useTabsContext } from './context';
+import { TabsContext } from './context';
 import { TabListWrapper } from './styles';
 
 export const TabList = forwardRef< HTMLDivElement, TabListProps >(
 	function TabList( { children, className, style }, ref ) {
-		const context = useTabsContext();
+		const context = useContext( TabsContext );
 		if ( ! context ) {
 			warning( '`Tabs.TabList` must be wrapped in a `Tabs` component.' );
 			return null;

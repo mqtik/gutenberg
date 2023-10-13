@@ -18,7 +18,7 @@ export const Tab = forwardRef< HTMLButtonElement, TabProps >( function Tab(
 ) {
 	const context = useContext( TabsContext );
 	if ( ! context ) {
-		warning( '`Tabs.TabList` must be wrapped in a `Tabs` component.' );
+		warning( '`Tabs.Tab` must be wrapped in a `Tabs` component.' );
 		return null;
 	}
 	const { store, instanceId } = context;
