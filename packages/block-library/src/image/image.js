@@ -25,7 +25,6 @@ import {
 	MediaReplaceFlow,
 	store as blockEditorStore,
 	useSetting,
-	BlockAlignmentControl,
 	__experimentalImageEditor as ImageEditor,
 	__experimentalGetElementClassName,
 	__experimentalUseBorderProps as useBorderProps,
@@ -256,11 +255,7 @@ export default function Image( {
 				loadedNaturalHeight ||
 				undefined,
 		};
-	}, [
-		loadedNaturalWidth,
-		loadedNaturalHeight,
-		imageRef.current?.complete,
-	] );
+	}, [ loadedNaturalWidth, loadedNaturalHeight ] );
 
 	function onResizeStart() {
 		toggleSelection( false );
@@ -325,21 +320,6 @@ export default function Image( {
 			onError( message ) {
 				createErrorNotice( message, { type: 'snackbar' } );
 			},
-		} );
-	}
-
-	function updateAlignment( nextAlign ) {
-		const extraUpdatedAttributes = [ 'wide', 'full' ].includes( nextAlign )
-			? {
-					width: undefined,
-					height: undefined,
-					aspectRatio: undefined,
-					scale: undefined,
-			  }
-			: {};
-		setAttributes( {
-			...extraUpdatedAttributes,
-			align: nextAlign,
 		} );
 	}
 
@@ -430,12 +410,6 @@ export default function Image( {
 	const controls = (
 		<>
 			<BlockControls group="block">
-				{ hasNonContentControls && (
-					<BlockAlignmentControl
-						value={ align }
-						onChange={ updateAlignment }
-					/>
-				) }
 				{ hasNonContentControls && (
 					<ToolbarButton
 						onClick={ () => {

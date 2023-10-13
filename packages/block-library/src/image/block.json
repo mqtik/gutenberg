@@ -10,7 +10,8 @@
 	"textdomain": "default",
 	"attributes": {
 		"align": {
-			"type": "string"
+			"type": "string",
+			"default": ""
 		},
 		"url": {
 			"type": "string",
@@ -96,6 +97,7 @@
 	},
 	"supports": {
 		"anchor": true,
+		"align": [ "left", "center", "right", "wide", "full" ],
 		"color": {
 			"text": false,
 			"background": false

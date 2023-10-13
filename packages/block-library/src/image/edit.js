@@ -10,8 +10,6 @@ import { getBlobByURL, isBlobURL, revokeBlobURL } from '@wordpress/blob';
 import { Placeholder } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import {
-	BlockAlignmentControl,
-	BlockControls,
 	BlockIcon,
 	MediaPlaceholder,
 	useBlockProps,
@@ -19,7 +17,7 @@ import {
 	__experimentalUseBorderProps as useBorderProps,
 	useBlockEditingMode,
 } from '@wordpress/block-editor';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useEffect, useRef, useState, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { image as icon } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
@@ -106,7 +104,6 @@ export function ImageEdit( {
 		url = '',
 		alt,
 		caption,
-		align,
 		id,
 		width,
 		height,
@@ -138,112 +135,125 @@ export function ImageEdit( {
 	const blockEditingMode = useBlockEditingMode();
 
 	const { createErrorNotice } = useDispatch( noticesStore );
-	function onUploadError( message ) {
-		createErrorNotice( message, { type: 'snackbar' } );
-		setAttributes( {
-			src: undefined,
-			id: undefined,
-			url: undefined,
-		} );
-		setTemporaryURL( undefined );
-	}
-
-	function onSelectImage( media ) {
-		if ( ! media || ! media.url ) {
+	const onUploadError = useCallback(
+		( message ) => {
+			createErrorNotice( message, { type: 'snackbar' } );
 			setAttributes( {
-				url: undefined,
-				alt: undefined,
+				src: undefined,
 				id: undefined,
-				title: undefined,
-				caption: undefined,
+				url: undefined,
 			} );
+			setTemporaryURL( undefined );
+		},
+		[ createErrorNotice, setAttributes ]
+	);
 
-			return;
-		}
+	const onSelectImage = useCallback(
+		( media ) => {
+			if ( ! media || ! media.url ) {
+				setAttributes( {
+					url: undefined,
+					alt: undefined,
+					id: undefined,
+					title: undefined,
+					caption: undefined,
+				} );
 
-		if ( isBlobURL( media.url ) ) {
-			setTemporaryURL( media.url );
-			return;
-		}
+				return;
+			}
 
-		setTemporaryURL();
+			if ( isBlobURL( media.url ) ) {
+				setTemporaryURL( media.url );
+				return;
+			}
 
-		// Try to use the previous selected image size if its available
-		// otherwise try the default image size or fallback to "full"
-		let newSize = 'full';
-		if ( sizeSlug && hasSize( media, sizeSlug ) ) {
-			newSize = sizeSlug;
-		} else if ( hasSize( media, imageDefaultSize ) ) {
-			newSize = imageDefaultSize;
-		}
+			setTemporaryURL();
 
-		let mediaAttributes = pickRelevantMediaFiles( media, newSize );
+			// Try to use the previous selected image size if its available
+			// otherwise try the default image size or fallback to "full"
+			let newSize = 'full';
+			if ( sizeSlug && hasSize( media, sizeSlug ) ) {
+				newSize = sizeSlug;
+			} else if ( hasSize( media, imageDefaultSize ) ) {
+				newSize = imageDefaultSize;
+			}
 
-		// If a caption text was meanwhile written by the user,
-		// make sure the text is not overwritten by empty captions.
-		if ( captionRef.current && ! mediaAttributes.caption ) {
-			const { caption: omittedCaption, ...restMediaAttributes } =
-				mediaAttributes;
-			mediaAttributes = restMediaAttributes;
-		}
+			let mediaAttributes = pickRelevantMediaFiles( media, newSize );
 
-		let additionalAttributes;
-		// Reset the dimension attributes if changing to a different image.
-		if ( ! media.id || media.id !== id ) {
-			additionalAttributes = {
-				sizeSlug: newSize,
-			};
-		} else {
-			// Keep the same url when selecting the same file, so "Resolution"
-			// option is not changed.
-			additionalAttributes = { url };
-		}
+			// If a caption text was meanwhile written by the user,
+			// make sure the text is not overwritten by empty captions.
+			if ( captionRef.current && ! mediaAttributes.caption ) {
+				const { caption: omittedCaption, ...restMediaAttributes } =
+					mediaAttributes;
+				mediaAttributes = restMediaAttributes;
+			}
 
-		// Check if default link setting should be used.
-		let linkDestination = attributes.linkDestination;
-		if ( ! linkDestination ) {
-			// Use the WordPress option to determine the proper default.
-			// The constants used in Gutenberg do not match WP options so a little more complicated than ideal.
-			// TODO: fix this in a follow up PR, requires updating media-text and ui component.
-			switch (
-				window?.wp?.media?.view?.settings?.defaultProps?.link ||
-				LINK_DESTINATION_NONE
-			) {
-				case 'file':
+			let additionalAttributes;
+			// Reset the dimension attributes if changing to a different image.
+			if ( ! media.id || media.id !== id ) {
+				additionalAttributes = {
+					sizeSlug: newSize,
+				};
+			} else {
+				// Keep the same url when selecting the same file, so "Resolution"
+				// option is not changed.
+				additionalAttributes = { url };
+			}
+
+			// Check if default link setting should be used.
+			let linkDestination = attributes.linkDestination;
+			if ( ! linkDestination ) {
+				// Use the WordPress option to determine the proper default.
+				// The constants used in Gutenberg do not match WP options so a little more complicated than ideal.
+				// TODO: fix this in a follow up PR, requires updating media-text and ui component.
+				switch (
+					window?.wp?.media?.view?.settings?.defaultProps?.link ||
+					LINK_DESTINATION_NONE
+				) {
+					case 'file':
+					case LINK_DESTINATION_MEDIA:
+						linkDestination = LINK_DESTINATION_MEDIA;
+						break;
+					case 'post':
+					case LINK_DESTINATION_ATTACHMENT:
+						linkDestination = LINK_DESTINATION_ATTACHMENT;
+						break;
+					case LINK_DESTINATION_CUSTOM:
+						linkDestination = LINK_DESTINATION_CUSTOM;
+						break;
+					case LINK_DESTINATION_NONE:
+						linkDestination = LINK_DESTINATION_NONE;
+						break;
+				}
+			}
+
+			// Check if the image is linked to it's media.
+			let href;
+			switch ( linkDestination ) {
 				case LINK_DESTINATION_MEDIA:
-					linkDestination = LINK_DESTINATION_MEDIA;
+					href = media.url;
 					break;
-				case 'post':
 				case LINK_DESTINATION_ATTACHMENT:
-					linkDestination = LINK_DESTINATION_ATTACHMENT;
-					break;
-				case LINK_DESTINATION_CUSTOM:
-					linkDestination = LINK_DESTINATION_CUSTOM;
-					break;
-				case LINK_DESTINATION_NONE:
-					linkDestination = LINK_DESTINATION_NONE;
+					href = media.link;
 					break;
 			}
-		}
+			mediaAttributes.href = href;
 
-		// Check if the image is linked to it's media.
-		let href;
-		switch ( linkDestination ) {
-			case LINK_DESTINATION_MEDIA:
-				href = media.url;
-				break;
-			case LINK_DESTINATION_ATTACHMENT:
-				href = media.link;
-				break;
-		}
-		mediaAttributes.href = href;
-
-		setAttributes( {
-			...mediaAttributes,
-			...additionalAttributes,
-			linkDestination,
-		} );
-	}
+			setAttributes( {
+				...mediaAttributes,
+				...additionalAttributes,
+				linkDestination,
+			} );
+		},
+		[
+			attributes.linkDestination,
+			id,
+			imageDefaultSize,
+			setAttributes,
+			sizeSlug,
+			url,
+		]
+	);
 
 	function onSelectURL( newURL ) {
 		if ( newURL !== url ) {
@@ -255,17 +265,7 @@ export function ImageEdit( {
 		}
 	}
 
-	function updateAlignment( nextAlign ) {
-		const extraUpdatedAttributes = [ 'wide', 'full' ].includes( nextAlign )
-			? { width: undefined, height: undefined }
-			: {};
-		setAttributes( {
-			...extraUpdatedAttributes,
-			align: nextAlign,
-		} );
-	}
-
-	let isTemp = isTemporaryImage( id, url );
+	const isTemp = isTemporaryImage( id, url );
 
 	// Upload a temporary image on mount.
 	useEffect( () => {
@@ -283,12 +283,11 @@ export function ImageEdit( {
 				},
 				allowedTypes: ALLOWED_MEDIA_TYPES,
 				onError: ( message ) => {
-					isTemp = false;
 					onUploadError( message );
 				},
 			} );
 		}
-	}, [] );
+	}, [ isTemp, mediaUpload, onSelectImage, onUploadError, url ] );
 
 	// If an image is temporary, revoke the Blob url when it is uploaded (and is
 	// no longer temporary).
@@ -298,7 +297,7 @@ export function ImageEdit( {
 			return;
 		}
 		revokeBlobURL( temporaryURL );
-	}, [ isTemp, url ] );
+	}, [ isTemp, temporaryURL, url ] );
 
 	const isExternal = isExternalImage( id, url );
 	const src = isExternal ? url : undefined;
@@ -375,14 +374,6 @@ export function ImageEdit( {
 				clientId={ clientId }
 				blockEditingMode={ blockEditingMode }
 			/>
-			{ ! url && blockEditingMode === 'default' && (
-				<BlockControls group="block">
-					<BlockAlignmentControl
-						value={ align }
-						onChange={ updateAlignment }
-					/>
-				</BlockControls>
-			) }
 			<MediaPlaceholder
 				icon={ <BlockIcon icon={ icon } /> }
 				onSelect={ onSelectImage }
