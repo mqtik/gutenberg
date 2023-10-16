@@ -19,8 +19,6 @@ type PerfUtilsConstructorProps = {
 	page: Page;
 };
 
-const BROWSER_IDLE_WAIT = 1000;
-
 export class PerfUtils {
 	page: Page;
 
@@ -140,8 +138,6 @@ export class PerfUtils {
 		if ( ! fs.existsSync( filepath ) ) {
 			throw new Error( `File not found: ${ filepath }` );
 		}
-		// Wait for the browser to be idle before loading the blocks.
-		await this.page.waitForTimeout( BROWSER_IDLE_WAIT );
 		return await this.page.evaluate( ( html: string ) => {
 			const { parse } = window.wp.blocks;
 			const { dispatch } = window.wp.data;
