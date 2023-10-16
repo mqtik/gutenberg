@@ -149,7 +149,24 @@ export function makeFormDataFromFontFamilies( fontFamilies ) {
 				}
 				return face;
 			} );
+			const familyNames = family.fontFamily.split( ',' ).map( familyName => familyName.trim() );
+	        const formattedFontFamilies = familyNames.map( name => {
+				if (
+					name.includes(' ') &&
+					!name.includes('"') &&
+					!name.includes("'")
+				) {
+					return `'${name}'`;
+				} else {
+					return name;
+				}
+			});
+
+			if ( formattedFontFamilies.length > 1 ) {
+				family.fontFamily = formattedFontFamilies.join(', ');
+			}
 		}
+
 		return family;
 	} );
 	formData.append( 'font_families', JSON.stringify( newFontFamilies ) );
