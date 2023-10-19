@@ -17,8 +17,11 @@ import { dateI18n, getDate, getSettings } from '@wordpress/date';
 import Page from '../page';
 import Link from '../routes/link';
 import { DataViews } from '../dataviews';
-import useTrashPostAction from '../actions/trash-post';
-import { postRevisionsAction, viewPostAction } from '../actions/view-actions';
+import {
+	useTrashPostAction,
+	postRevisionsAction,
+	viewPostAction,
+} from '../actions';
 import Media from '../media';
 
 const EMPTY_ARRAY = [];
