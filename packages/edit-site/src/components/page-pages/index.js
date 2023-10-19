@@ -18,6 +18,7 @@ import Page from '../page';
 import Link from '../routes/link';
 import { DataViews } from '../dataviews';
 import useTrashPostAction from '../actions/trash-post';
+import { postRevisionsAction, viewPostAction } from '../actions/view-actions';
 import Media from '../media';
 
 const EMPTY_ARRAY = [];
@@ -220,7 +221,10 @@ export default function PagePages() {
 	);
 
 	const trashPostAction = useTrashPostAction();
-	const actions = useMemo( () => [ trashPostAction ], [ trashPostAction ] );
+	const actions = useMemo(
+		() => [ viewPostAction, trashPostAction, postRevisionsAction ],
+		[ trashPostAction ]
+	);
 	const onChangeView = useCallback(
 		( viewUpdater ) => {
 			let updatedView =
