@@ -73,75 +73,91 @@ function Pagination( {
 				}
 			</Text>
 			{ !! totalItems && (
-				<HStack expanded={ false } spacing={ 1 }>
-					<Button
-						onClick={ () => onChangeView( { ...view, page: 0 } ) }
-						disabled={ view.page === 0 }
-						label={ __( 'First page' ) }
-						icon={ previous }
-						showTooltip
-					/>
-					<Button
-						onClick={ () =>
-							onChangeView( { ...view, page: view.page - 1 } )
-						}
-						disabled={ view.page === 0 }
-						label={ __( 'Previous page' ) }
-						icon={ chevronLeft }
-						showTooltip
-					/>
+				<HStack expanded={ false } spacing={ 3 }>
 					<HStack
 						justify="flex-start"
 						expanded={ false }
 						spacing={ 1 }
 					>
-						{ createInterpolateElement(
-							sprintf(
-								// translators: %1$s: Current page number, %2$s: Total number of pages.
-								_x( '<CurrenPageControl /> of %2$s', 'paging' ),
-								currentPage,
-								totalPages
-							),
-							{
-								CurrenPageControl: (
-									<NumberControl
-										aria-label={ __( 'Current page' ) }
-										min={ 1 }
-										max={ totalPages }
-										onChange={ ( value ) => {
-											if ( value > totalPages ) return;
-											onChangeView( {
-												...view,
-												page: view.page - 1,
-											} );
-										} }
-										step="1"
-										value={ currentPage }
-										isDragEnabled={ false }
-										spinControls="none"
-									/>
-								),
+						<Button
+							onClick={ () => onChangeView( { ...view, page: 0 } ) }
+							disabled={ view.page === 0 }
+							label={ __( 'First page' ) }
+							icon={ previous }
+							showTooltip
+							size='compact'
+						/>
+						<Button
+							onClick={ () =>
+								onChangeView( { ...view, page: view.page - 1 } )
 							}
-						) }
+							disabled={ view.page === 0 }
+							label={ __( 'Previous page' ) }
+							icon={ chevronLeft }
+							showTooltip
+							size='compact'
+						/>
 					</HStack>
-					<Button
-						onClick={ () =>
-							onChangeView( { ...view, page: view.page + 1 } )
+					<HStack
+						justify="flex-start"
+						expanded={ false }
+						spacing={ 2 }
+					>
+					{ createInterpolateElement(
+						sprintf(
+							// translators: %1$s: Current page number, %2$s: Total number of pages.
+							_x( '<CurrenPageControl /> of %2$s', 'paging' ),
+							currentPage,
+							totalPages
+						),
+						{
+							CurrenPageControl: (
+								<NumberControl
+									aria-label={ __( 'Current page' ) }
+									min={ 1 }
+									max={ totalPages }
+									onChange={ ( value ) => {
+										if ( value > totalPages ) return;
+										onChangeView( {
+											...view,
+											page: view.page - 1,
+										} );
+									} }
+									step="1"
+									value={ currentPage }
+									isDragEnabled={ false }
+									hideHTMLArrows
+								/>
+							),
 						}
-						disabled={ view.page >= totalPages - 1 }
-						label={ __( 'Next page' ) }
-						icon={ chevronRight }
-						showTooltip
-					/>
-					<Button
-						onClick={ () =>
-							onChangeView( { ...view, page: totalPages - 1 } )
-						}
-						disabled={ view.page >= totalPages - 1 }
-						label={ __( 'Last page' ) }
-						icon={ next }
-						showTooltip
-					/>
+					) }
+					</HStack>
+					<HStack
+						justify="flex-start"
+						expanded={ false }
+						spacing={ 1 }
+					>
+						<Button
+							onClick={ () =>
+								onChangeView( { ...view, page: view.page + 1 } )
+							}
+							disabled={ view.page >= totalPages - 1 }
+							label={ __( 'Next page' ) }
+							icon={ chevronRight }
+							showTooltip
+							size='compact'
+						/>
+						<Button
+							onClick={ () =>
+								onChangeView( { ...view, page: totalPages - 1 } )
+							}
+							disabled={ view.page >= totalPages - 1 }
+							label={ __( 'Last page' ) }
+							icon={ next }
+							showTooltip
+							size='compact'
+						/>
+					</HStack>
 				</HStack>
 			) }
 			<PageSizeControl view={ view } onChangeView={ onChangeView } />
