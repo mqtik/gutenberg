@@ -43,11 +43,7 @@ export default function Filters( { filters, fields, view, onChangeView } ) {
 				};
 			}
 
-			if (
-				[ 'enumeration_in', 'enumeration_not_in' ].some(
-					( type ) => type === filterIndex[ id ]?.type
-				)
-			) {
+			if ( 'enumeration' === filterIndex[ id ]?.type ) {
 				const elements = [
 					{
 						value: filter.resetValue || '',
@@ -81,11 +77,7 @@ export default function Filters( { filters, fields, view, onChangeView } ) {
 					/>
 				);
 			}
-			if (
-				[ 'enumeration_in', 'enumeration_not_in' ].some(
-					( type ) => type === filter.type
-				)
-			) {
+			if ( 'enumeration' === filter.type ) {
 				return (
 					<InFilter
 						key={ filterName }
