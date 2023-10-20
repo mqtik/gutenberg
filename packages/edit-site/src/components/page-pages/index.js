@@ -27,7 +27,7 @@ import useTrashPostAction from '../actions/trash-post';
 import Media from '../media';
 import DataviewsContext from '../dataviews/context';
 import { DEFAULT_STATUSES } from '../dataviews/provider';
-import Editor from './editor';
+import SideEditor from './side-editor';
 
 const EMPTY_ARRAY = [];
 const defaultConfigPerViewType = {
@@ -262,7 +262,7 @@ export default function PagePages() {
 				<Page>
 					<div className="edit-site-page-pages-preview">
 						{ selection.length === 1 && (
-							<Editor
+							<SideEditor
 								postId={ selection[ 0 ] }
 								postType={ postType }
 							/>
