@@ -43,7 +43,7 @@ export default function Filters( { filters, fields, view, onChangeView } ) {
 				};
 			}
 
-			if ( 'enumeration' === filterIndex[ id ]?.type ) {
+			if ( filterIndex[ id ]?.type === 'enumeration' ) {
 				const elements = [
 					{
 						value: filter.resetValue || '',
