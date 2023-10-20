@@ -13,6 +13,7 @@ import {
 	useMemo,
 	useCallback,
 	useEffect,
+	useState,
 } from '@wordpress/element';
 import { dateI18n, getDate, getSettings } from '@wordpress/date';
 
@@ -21,11 +22,12 @@ import { dateI18n, getDate, getSettings } from '@wordpress/date';
  */
 import Page from '../page';
 import Link from '../routes/link';
-import { DataViews } from '../dataviews';
+import { DataViews, viewTypeSupportsMap } from '../dataviews';
 import useTrashPostAction from '../actions/trash-post';
 import Media from '../media';
 import DataviewsContext from '../dataviews/context';
 import { DEFAULT_STATUSES } from '../dataviews/provider';
+import Editor from './editor';
 
 const EMPTY_ARRAY = [];
 const defaultConfigPerViewType = {
@@ -36,6 +38,8 @@ const defaultConfigPerViewType = {
 };
 
 export default function PagePages() {
+	const postType = 'page';
+	const [ selection, setSelection ] = useState( [] );
 	const { view, setView } = useContext( DataviewsContext );
 	// Request post statuses to get the proper labels.
 	const { records: statuses } = useEntityRecords( 'root', 'status' );
@@ -87,7 +91,7 @@ export default function PagePages() {
 		isResolving: isLoadingPages,
 		totalItems,
 		totalPages,
-	} = useEntityRecords( 'postType', 'page', queryArgs );
+	} = useEntityRecords( 'postType', postType, queryArgs );
 
 	const { records: authors } = useEntityRecords( 'root', 'user', {
 		has_published_posts: [ 'page' ],
@@ -125,7 +129,7 @@ export default function PagePages() {
 				header: __( 'Title' ),
 				id: 'title',
 				getValue: ( { item } ) => item.title?.rendered || item.slug,
-				render: ( { item } ) => {
+				render: ( { item, view: { type } } ) => {
 					return (
 						<VStack spacing={ 1 }>
 							<Heading as="h3" level={ 5 }>
@@ -134,6 +138,14 @@ export default function PagePages() {
 										postId: item.id,
 										postType: item.type,
 										canvas: 'edit',
+									} }
+									onClick={ ( event ) => {
+										if (
+											viewTypeSupportsMap[ type ].preview
+										) {
+											event.preventDefault();
+											setSelection( [ item.id ] );
+										}
 									} }
 								>
 									{ decodeEntities(
@@ -231,17 +243,46 @@ export default function PagePages() {
 
 	// TODO: we need to handle properly `data={ data || EMPTY_ARRAY }` for when `isLoading`.
 	return (
-		<Page title={ __( 'Pages' ) }>
-			<DataViews
-				paginationInfo={ paginationInfo }
-				fields={ fields }
-				filters={ filters }
-				actions={ actions }
-				data={ pages || EMPTY_ARRAY }
-				isLoading={ isLoadingPages }
-				view={ view }
-				onChangeView={ onChangeView }
-			/>
-		</Page>
+		<>
+			<Page title={ __( 'Pages' ) }>
+				<DataViews
+					paginationInfo={ paginationInfo }
+					fields={ fields }
+					filters={ filters }
+					actions={ actions }
+					data={ pages || EMPTY_ARRAY }
+					isLoading={ isLoadingPages }
+					view={ view }
+					onChangeView={ onChangeView }
+					selection={ selection }
+					onChangeSelection={ setSelection }
+				/>
+			</Page>
+			{ viewTypeSupportsMap[ view.type ].preview && (
+				<Page>
+					<div className="edit-site-page-pages-preview">
+						{ selection.length === 1 && (
+							<Editor
+								postId={ selection[ 0 ] }
+								postType={ postType }
+							/>
+						) }
+						{ selection.length !== 1 && (
+							<div
+								style={ {
+									display: 'flex',
+									flexDirection: 'column',
+									justifyContent: 'center',
+									textAlign: 'center',
+									height: '100%',
+								} }
+							>
+								<p>{ __( 'Select a page to preview' ) }</p>
+							</div>
+						) }
+					</div>
+				</Page>
+			) }
+		</>
 	);
 }
