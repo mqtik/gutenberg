@@ -6,6 +6,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { privateApis as blockEditorPrivateApis } from '@wordpress/block-editor';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -23,7 +24,11 @@ export default ( { filter, view, onChangeView } ) => {
 					as="span"
 					className="dataviews__select-control-prefix"
 				>
-					{ filter.name + ':' }
+					{ filter.name +
+						( filter.type === 'enumeration_not_in'
+							? ' ' + __( 'not' )
+							: '' ) +
+						':' }
 				</InputControlPrefixWrapper>
 			}
 			options={ filter.elements }
